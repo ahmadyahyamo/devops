@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: juice-shop
+  namespace: devops-task
+  labels:
+    app: juice-shop
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: juice-shop
+      labels:
+        app: juice-shop
+    spec:
+      containers:
+        - name: juice-shop
+          image: bkimminich/juice-shop
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "500m"
+            limits:
+              memory: "1000Mi"
+              cpu: "1000m"
+          ports:
+            - containerPort: 3000
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: juice-shop
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: juice-shop-svc
+  namespace: devops-task
+spec:
+  selector:
+    app: juice-shop
+  ports:
+    - port: 8080
+      targetPort: 3000
+  type: ClusterIP
